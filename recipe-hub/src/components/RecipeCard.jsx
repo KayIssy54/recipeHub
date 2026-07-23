@@ -1,6 +1,14 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 function RecipeCard({ recipe }) {
+  // state to track if the recipe is saved
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = () => {
+    setSaved(!saved); // toggle between true and false
+  };
+
   return (
     <div style={styles.card}>
       <img
@@ -12,7 +20,16 @@ function RecipeCard({ recipe }) {
       <div style={styles.content}>
         <div style={styles.topRow}>
           <span style={styles.category}>{recipe.category}</span>
-          <button style={styles.favoriteBtn}>❤️</button>
+
+          <button
+            style={{
+              ...styles.favoriteBtn,
+              background: saved ? '#4CAF50' : '#FF9800',
+            }}
+            onClick={handleSave}
+          >
+            {saved ? 'Saved ✓' : 'Save'}
+          </button>
         </div>
 
         <h3 style={styles.title}>{recipe.title}</h3>
@@ -61,8 +78,12 @@ const styles = {
     fontWeight: '600',
   },
   favoriteBtn: {
-    background: 'transparent',
-    fontSize: '20px',
+    color: '#fff',
+    padding: '8px 14px',
+    borderRadius: '10px',
+    fontWeight: '600',
+    border: 'none',
+    cursor: 'pointer',
   },
   title: {
     marginBottom: '12px',

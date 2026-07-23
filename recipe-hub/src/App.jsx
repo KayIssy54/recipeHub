@@ -1,17 +1,22 @@
 import { Routes, Route } from 'react-router-dom';
+
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
+import RecipesPage from './pages/RecipesPage';
 
 function App() {
   return (
     <Routes>
-      <Route path='/' element={<LandingPage />} />
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignUpPage />} />
 
-      <Route path='/login' element={<LoginPage />} />
-      <Route path='/signup' element={<SignUpPage/>} />
-      <Route path='/recipes' element={<h1>Recipes Page</h1>} />
-      <Route path='/categories' element={<h1>Categories Page</h1>} />
+      {/* This line is the important one */}
+      <Route path="/recipes" element={<RecipesPage />} />
+
+      <Route path="/categories" element={<h1>Categories Page</h1>} />
+      <Route path="/recipes/:id" element={<h1>Recipe Details Page</h1>} />
     </Routes>
   );
 }
