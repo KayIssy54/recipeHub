@@ -21,8 +21,8 @@ function LandingPage() {
                 Explore Recipes
               </Link>
 
-              <Link to="/login" style={styles.secondaryBtn}>
-                Add Recipe
+              <Link to="/add-recipe" style={styles.secondaryBtn}>
+               Add Recipe
               </Link>
             </div>
           </div>

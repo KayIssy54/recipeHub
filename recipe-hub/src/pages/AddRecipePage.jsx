@@ -10,30 +10,36 @@ function AddRecipePage() {
   const [prepTime, setPrepTime] = useState('');
   const [cookTime, setCookTime] = useState('');
   const [servings, setServings] = useState('');
+  const [imageFile, setImageFile] = useState(null);
 
   const [ingredients, setIngredients] = useState(['']);
   const [steps, setSteps] = useState(['']);
 
+  // Handle ingredient input
   const handleIngredientChange = (index, value) => {
     const updated = [...ingredients];
     updated[index] = value;
     setIngredients(updated);
   };
 
+  // Add another ingredient field
   const addIngredient = () => {
     setIngredients([...ingredients, '']);
   };
 
+  // Handle instruction input
   const handleStepChange = (index, value) => {
     const updated = [...steps];
     updated[index] = value;
     setSteps(updated);
   };
 
+  // Add another instruction field
   const addStep = () => {
     setSteps([...steps, '']);
   };
 
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -44,6 +50,7 @@ function AddRecipePage() {
       prepTime,
       cookTime,
       servings,
+      image: imageFile ? imageFile.name : null,
       ingredients,
       steps,
     };
@@ -52,13 +59,14 @@ function AddRecipePage() {
 
     alert('Recipe saved successfully!');
 
-    // reset form
+    // Reset form
     setRecipeName('');
     setCategory('Dinner');
     setDescription('');
     setPrepTime('');
     setCookTime('');
     setServings('');
+    setImageFile(null);
     setIngredients(['']);
     setSteps(['']);
   };
@@ -68,6 +76,7 @@ function AddRecipePage() {
       <Navbar />
 
       <div className="container" style={styles.page}>
+        {/* Page header */}
         <div style={styles.header}>
           <h1 style={styles.title}>Add New Recipe</h1>
           <p style={styles.subtitle}>
@@ -75,10 +84,12 @@ function AddRecipePage() {
           </p>
         </div>
 
+        {/* Form */}
         <form onSubmit={handleSubmit} style={styles.form}>
-          {/* Basic info */}
+
+          {/* Recipe Information */}
           <div style={styles.section}>
-            <h2>Recipe Information</h2>
+            <h2 style={styles.sectionTitle}>Recipe Information</h2>
 
             <input
               type="text"
@@ -110,12 +121,32 @@ function AddRecipePage() {
               rows={4}
             />
 
-            <input type="file" style={styles.input} />
+            {/* Upload Image */}
+            <div>
+              <label style={styles.label}>Upload Recipe Image</label>
+
+              <input
+                type="file"
+                accept="image/*"
+                style={styles.input}
+                onChange={(e) => setImageFile(e.target.files[0])}
+              />
+
+              <p style={styles.helperText}>
+                Choose a JPG or PNG image for your recipe.
+              </p>
+
+              {imageFile && (
+                <p style={styles.selectedFile}>
+                  Selected: {imageFile.name}
+                </p>
+              )}
+            </div>
           </div>
 
-          {/* Times */}
+          {/* Cooking Details */}
           <div style={styles.section}>
-            <h2>Cooking Details</h2>
+            <h2 style={styles.sectionTitle}>Cooking Details</h2>
 
             <div style={styles.row}>
               <input
@@ -146,7 +177,7 @@ function AddRecipePage() {
 
           {/* Ingredients */}
           <div style={styles.section}>
-            <h2>Ingredients</h2>
+            <h2 style={styles.sectionTitle}>Ingredients</h2>
 
             {ingredients.map((ingredient, index) => (
               <input
@@ -172,7 +203,7 @@ function AddRecipePage() {
 
           {/* Instructions */}
           <div style={styles.section}>
-            <h2>Cooking Instructions</h2>
+            <h2 style={styles.sectionTitle}>Cooking Instructions</h2>
 
             {steps.map((step, index) => (
               <textarea
@@ -194,7 +225,7 @@ function AddRecipePage() {
             </button>
           </div>
 
-          {/* Submit */}
+          {/* Save Button */}
           <button type="submit" style={styles.saveBtn}>
             Save Recipe
           </button>
@@ -213,12 +244,13 @@ const styles = {
 
   header: {
     textAlign: 'center',
-    marginBottom: '30px',
+    marginBottom: '32px',
   },
 
   title: {
     fontSize: '42px',
-    marginBottom: '10px',
+    marginBottom: '12px',
+    color: '#333',
   },
 
   subtitle: {
@@ -242,6 +274,12 @@ const styles = {
     gap: '16px',
   },
 
+  sectionTitle: {
+    fontSize: '24px',
+    color: '#333',
+    marginBottom: '8px',
+  },
+
   row: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
@@ -253,6 +291,7 @@ const styles = {
     borderRadius: '12px',
     border: '1px solid #ddd',
     fontSize: '16px',
+    outline: 'none',
   },
 
   textarea: {
@@ -261,6 +300,26 @@ const styles = {
     border: '1px solid #ddd',
     fontSize: '16px',
     resize: 'vertical',
+    outline: 'none',
+  },
+
+  label: {
+    fontWeight: '600',
+    marginBottom: '8px',
+    display: 'block',
+    color: '#333',
+  },
+
+  helperText: {
+    color: '#666',
+    fontSize: '14px',
+    marginTop: '6px',
+  },
+
+  selectedFile: {
+    color: '#4CAF50',
+    fontWeight: '600',
+    marginTop: '8px',
   },
 
   addBtn: {
@@ -268,7 +327,9 @@ const styles = {
     color: '#4CAF50',
     padding: '12px 16px',
     borderRadius: '12px',
+    border: '1px solid #ddd',
     fontWeight: '600',
+    cursor: 'pointer',
     alignSelf: 'flex-start',
   },
 
@@ -277,8 +338,10 @@ const styles = {
     color: '#fff',
     padding: '16px',
     borderRadius: '14px',
+    border: 'none',
     fontSize: '18px',
     fontWeight: '600',
+    cursor: 'pointer',
   },
 };
 
