@@ -9,7 +9,7 @@ import CategoriesPage from './pages/CategoriesPage';
 import AddRecipePage from './pages/AddRecipePage';
 import MyRecipesPage from './pages/MyRecipesPage';
 import EditRecipePage from './pages/EditRecipePage';
-
+import FavoritesPage from './pages/FavoritesPage';
 
 function App() {
   return (
@@ -23,6 +23,7 @@ function App() {
       <Route path="/add-recipe" element={<AddRecipePage />} />
       <Route path="/my-recipes" element={<MyRecipesPage />} />
       <Route path="/edit-recipe/:id" element={<EditRecipePage />} />
+      <Route path="/favorites" element={<FavoritesPage />} />
     </Routes>
   );
 }
