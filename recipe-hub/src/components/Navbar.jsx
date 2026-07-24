@@ -9,9 +9,10 @@ function Navbar() {
         <Link to="/">Home</Link>
         <Link to="/recipes">Recipes</Link>
         <Link to="/categories">Categories</Link>
+        <Link to="/favorites">Favorites</Link>
+        <Link to="/reviews">Reviews</Link>
         <Link to="/add-recipe">Add Recipe</Link>
         <Link to="/my-recipes">My Recipes</Link>
-        <Link to="/favorites">Favorites</Link>
         <Link to="/login">Login</Link>
         <Link to="/signup" style={styles.signup}>
          Sign Up
