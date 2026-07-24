@@ -12,9 +12,11 @@ function Navbar() {
         <Link to="/add-recipe">Add Recipe</Link>
         <Link to="/login">Login</Link>
         <Link to="/signup" style={styles.signup}>
-
-          Sign Up
+         Sign Up
         </Link>
+        <Link to="/my-recipes">My Recipes</Link>
+  
+         
       </div>
     </nav>
   );

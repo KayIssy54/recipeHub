@@ -7,6 +7,7 @@ import RecipesPage from './pages/RecipesPage';
 import RecipeDetailsPage from './pages/RecipeDetailsPage';
 import CategoriesPage from './pages/CategoriesPage';
 import AddRecipePage from './pages/AddRecipePage';
+import MyRecipesPage from './pages/MyRecipesPage';
 
 function App() {
   return (
@@ -18,7 +19,7 @@ function App() {
       <Route path="/recipes/:id" element={<RecipeDetailsPage />} />
       <Route path="/categories" element={<CategoriesPage/>} />
       <Route path="/add-recipe" element={<AddRecipePage />} />
-
+      <Route path="/my-recipes" element={<MyRecipesPage />} />
     </Routes>
   );
 }
