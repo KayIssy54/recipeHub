@@ -1,18 +1,65 @@
 import { useParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import recipes from '../data/recipes';
+
+import { getRecipe } from '../api/recipes';
 
 function RecipeDetailsPage() {
   const { id } = useParams();
-  const recipe = recipes.find((r) => r.id === Number(id));
 
+  const [recipe, setRecipe] = useState(null);
   const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    async function loadRecipe() {
+      try {
+        const data = await getRecipe(id);
+        setRecipe(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadRecipe();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="container">
+          <h2>Loading recipe...</h2>
+        </div>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <Navbar />
+        <div className="container">
+          <h2>{error}</h2>
+        </div>
+      </>
+    );
+  }
 
   if (!recipe) {
-    return <h2 style={{ padding: '40px' }}>Recipe not found</h2>;
+    return (
+      <>
+        <Navbar />
+        <div className="container">
+          <h2>Recipe not found.</h2>
+        </div>
+      </>
+    );
   }
 
   return (
@@ -20,19 +67,28 @@ function RecipeDetailsPage() {
       <Navbar />
 
       <div className="container" style={styles.page}>
-        {/* Large recipe image */}
         <img
-          src={recipe.image}
+          src={
+            recipe.image_url ||
+            'https://via.placeholder.com/900x450?text=Recipe+Image'
+          }
           alt={recipe.title}
           style={styles.heroImage}
         />
 
-        {/* Title and save button */}
         <div style={styles.header}>
           <div>
-            <span style={styles.category}>{recipe.category}</span>
-            <h1 style={styles.title}>{recipe.title}</h1>
-            <p style={styles.rating}>⭐ {recipe.rating} / 5</p>
+            <span style={styles.category}>
+              {recipe.category?.category_name}
+            </span>
+
+            <h1 style={styles.title}>
+              {recipe.title}
+            </h1>
+
+            <p style={styles.rating}>
+              By {recipe.author?.first_name} {recipe.author?.last_name}
+            </p>
           </div>
 
           <button
@@ -46,62 +102,78 @@ function RecipeDetailsPage() {
           </button>
         </div>
 
-        {/* Recipe stats */}
         <div style={styles.stats}>
           <div style={styles.statCard}>
             <h4>Preparation</h4>
-            <p>{recipe.prepTime}</p>
+            <p>{recipe.prep_time} mins</p>
           </div>
 
           <div style={styles.statCard}>
             <h4>Cooking</h4>
-            <p>{recipe.cookTime}</p>
+            <p>{recipe.cook_time} mins</p>
           </div>
 
           <div style={styles.statCard}>
             <h4>Servings</h4>
-            <p>{recipe.servings} people</p>
+            <p>{recipe.servings}</p>
           </div>
         </div>
 
-        <div style={styles.content}>
-          {/* Ingredients */}
-          <div style={styles.section}>
-            <h2>Ingredients</h2>
+        <div style={styles.section}>
+          <h2>Description</h2>
+          <p>{recipe.description}</p>
+        </div>
 
+        <div style={styles.section}>
+          <h2>Ingredients</h2>
+
+          {recipe.recipe_ingredients?.length ? (
             <ul style={styles.list}>
-              {recipe.ingredients.map((item, index) => (
-                <li key={index}>{item}</li>
+              {recipe.recipe_ingredients.map((ingredient) => (
+                <li key={ingredient.recipe_ingredient_id}>
+                  {ingredient.quantity} {ingredient.unit}{' '}
+                  {ingredient.ingredient?.ingredient_name}
+                </li>
               ))}
             </ul>
-          </div>
+          ) : (
+            <p>No ingredients added yet.</p>
+          )}
+        </div>
 
-          {/* Instructions */}
-          <div style={styles.section}>
-            <h2>Cooking Instructions</h2>
+        <div style={styles.section}>
+          <h2>Instructions</h2>
 
+          {recipe.instructions?.length ? (
             <ol style={styles.list}>
-              {recipe.instructions.map((step, index) => (
-                <li key={index} style={{ marginBottom: '12px' }}>
-                  {step}
+              {recipe.instructions.map((instruction) => (
+                <li key={instruction.instruction_id}>
+                  {instruction.step_description}
                 </li>
               ))}
             </ol>
-          </div>
+          ) : (
+            <p>No instructions added yet.</p>
+          )}
         </div>
 
-        {/* Reviews */}
         <div style={styles.section}>
           <h2>Reviews</h2>
 
-          {recipe.reviews.map((review, index) => (
-            <div key={index} style={styles.reviewCard}>
-              <h4>{review.user}</h4>
-              <p>{review.comment}</p>
-            </div>
-          ))}
+          {recipe.reviews?.length ? (
+            recipe.reviews.map((review) => (
+              <div
+                key={review.review_id}
+                style={styles.reviewCard}
+              >
+                <h4>{review.user?.first_name}</h4>
 
-          <button style={styles.reviewBtn}>Write Review</button>
+                <p>{review.comment}</p>
+              </div>
+            ))
+          ) : (
+            <p>No reviews yet.</p>
+          )}
         </div>
       </div>
 
@@ -127,7 +199,6 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    gap: '20px',
     marginBottom: '30px',
     flexWrap: 'wrap',
   },
@@ -142,11 +213,10 @@ const styles = {
 
   title: {
     fontSize: '42px',
-    margin: '16px 0 8px',
+    margin: '15px 0',
   },
 
   rating: {
-    fontSize: '18px',
     color: '#666',
   },
 
@@ -154,15 +224,14 @@ const styles = {
     color: '#fff',
     padding: '14px 22px',
     borderRadius: '12px',
-    fontWeight: '600',
     border: 'none',
     cursor: 'pointer',
-    fontSize: '16px',
+    fontWeight: '600',
   },
 
   stats: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(180px,1fr))',
     gap: '20px',
     marginBottom: '40px',
   },
@@ -174,40 +243,24 @@ const styles = {
     textAlign: 'center',
   },
 
-  content: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '30px',
-    marginBottom: '40px',
-  },
-
   section: {
     background: '#fff',
     padding: '24px',
     borderRadius: '16px',
     boxShadow: '0 6px 18px rgba(0,0,0,0.06)',
+    marginBottom: '30px',
   },
 
   list: {
-    marginTop: '16px',
     paddingLeft: '20px',
-    lineHeight: '1.8',
+    lineHeight: '2',
   },
 
   reviewCard: {
     background: '#F8F9FA',
-    padding: '16px',
-    borderRadius: '12px',
-    marginTop: '16px',
-  },
-
-  reviewBtn: {
-    marginTop: '24px',
-    background: '#4CAF50',
-    color: '#fff',
-    padding: '12px 20px',
-    borderRadius: '12px',
-    fontWeight: '600',
+    padding: '15px',
+    borderRadius: '10px',
+    marginTop: '15px',
   },
 };
 

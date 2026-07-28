@@ -1,7 +1,9 @@
-const API_URL = "http://127.0.0.1:5000/api/recipes";
+import API_URL from "./api";
+
+const RECIPES_URL = `${API_URL}/recipes`;
 
 export async function getRecipes() {
-  const response = await fetch(`${API_URL}/`);
+  const response = await fetch(`${RECIPES_URL}/`);
 
   if (!response.ok) {
     throw new Error("Failed to fetch recipes.");
@@ -11,7 +13,7 @@ export async function getRecipes() {
 }
 
 export async function getRecipe(recipeId) {
-  const response = await fetch(`${API_URL}/${recipeId}`);
+  const response = await fetch(`${RECIPES_URL}/${recipeId}`);
 
   if (!response.ok) {
     throw new Error("Recipe not found.");
@@ -21,7 +23,7 @@ export async function getRecipe(recipeId) {
 }
 
 export async function createRecipe(recipeData) {
-  const response = await fetch(`${API_URL}/`, {
+  const response = await fetch(`${RECIPES_URL}/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
