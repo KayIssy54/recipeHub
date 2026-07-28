@@ -1,14 +1,40 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import RecipeCard from '../components/RecipeCard';
-import recipes from '../data/recipes';
+
+import { getRecipes } from '../api/recipes';
 
 function RecipesPage() {
+  const [recipes, setRecipes] = useState([]);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const categories = ['All', 'Breakfast', 'Lunch', 'Dinner', 'Dessert', 'Healthy'];
+  const categories = [
+    'All',
+    'Breakfast',
+    'Lunch',
+    'Dinner',
+    'Dessert',
+    'Healthy',
+  ];
+
+  useEffect(() => {
+    async function loadRecipes() {
+      try {
+        const data = await getRecipes();
+        setRecipes(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadRecipes();
+  }, []);
 
   const filteredRecipes = recipes.filter((recipe) => {
     const matchesSearch = recipe.title
@@ -17,7 +43,7 @@ function RecipesPage() {
 
     const matchesCategory =
       selectedCategory === 'All' ||
-      recipe.category === selectedCategory;
+      recipe.category?.category_name === selectedCategory;
 
     return matchesSearch && matchesCategory;
   });
@@ -29,12 +55,13 @@ function RecipesPage() {
       <div className="container" style={styles.page}>
         <div style={styles.header}>
           <h1 style={styles.title}>Explore Recipes</h1>
+
           <p style={styles.subtitle}>
             Find delicious meals, desserts, and healthy dishes.
           </p>
         </div>
 
-        {/* Search bar */}
+        {/* Search */}
         <input
           type="text"
           placeholder="Search recipes..."
@@ -43,7 +70,7 @@ function RecipesPage() {
           style={styles.search}
         />
 
-        {/* Category filters */}
+        {/* Categories */}
         <div style={styles.filters}>
           {categories.map((category) => (
             <button
@@ -52,9 +79,13 @@ function RecipesPage() {
               style={{
                 ...styles.filterBtn,
                 background:
-                  selectedCategory === category ? '#4CAF50' : '#F8F9FA',
+                  selectedCategory === category
+                    ? '#4CAF50'
+                    : '#F8F9FA',
                 color:
-                  selectedCategory === category ? '#fff' : '#333',
+                  selectedCategory === category
+                    ? '#fff'
+                    : '#333',
               }}
             >
               {category}
@@ -62,16 +93,40 @@ function RecipesPage() {
           ))}
         </div>
 
-        {/* Recipe grid */}
-        <div style={styles.grid}>
-          {filteredRecipes.length > 0 ? (
-            filteredRecipes.map((recipe) => (
-              <RecipeCard key={recipe.id} recipe={recipe} />
-            ))
-          ) : (
-            <p>No recipes found.</p>
-          )}
-        </div>
+        {/* Loading */}
+        {loading && (
+          <p style={{ textAlign: 'center' }}>
+            Loading recipes...
+          </p>
+        )}
+
+        {/* Error */}
+        {error && (
+          <p
+            style={{
+              color: 'red',
+              textAlign: 'center',
+            }}
+          >
+            {error}
+          </p>
+        )}
+
+        {/* Recipes */}
+        {!loading && !error && (
+          <div style={styles.grid}>
+            {filteredRecipes.length > 0 ? (
+              filteredRecipes.map((recipe) => (
+                <RecipeCard
+                  key={recipe.recipe_id}
+                  recipe={recipe}
+                />
+              ))
+            ) : (
+              <p>No recipes found.</p>
+            )}
+          </div>
+        )}
       </div>
 
       <Footer />
@@ -83,18 +138,22 @@ const styles = {
   page: {
     padding: '40px 0',
   },
+
   header: {
     textAlign: 'center',
     marginBottom: '30px',
   },
+
   title: {
     fontSize: '42px',
     marginBottom: '10px',
   },
+
   subtitle: {
     color: '#666',
     fontSize: '18px',
   },
+
   search: {
     width: '100%',
     padding: '16px',
@@ -103,17 +162,22 @@ const styles = {
     fontSize: '16px',
     marginBottom: '24px',
   },
+
   filters: {
     display: 'flex',
     gap: '12px',
     flexWrap: 'wrap',
     marginBottom: '30px',
   },
+
   filterBtn: {
     padding: '10px 18px',
     borderRadius: '999px',
     fontWeight: '600',
+    border: 'none',
+    cursor: 'pointer',
   },
+
   grid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
