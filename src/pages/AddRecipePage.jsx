@@ -1,11 +1,16 @@
 import { useState } from 'react';
+import { createRecipe } from "../api/recipes";
+import { useNavigate } from "react-router-dom";
 
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
+
 function AddRecipePage() {
+  const navigate = useNavigate();
+
   const [recipeName, setRecipeName] = useState('');
-  const [category, setCategory] = useState('Dinner');
+  const [category, setCategory] = useState('Dessert');
   const [description, setDescription] = useState('');
   const [prepTime, setPrepTime] = useState('');
   const [cookTime, setCookTime] = useState('');
@@ -40,36 +45,58 @@ function AddRecipePage() {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const newRecipe = {
-      recipeName,
-      category,
-      description,
-      prepTime,
-      cookTime,
-      servings,
-      image: imageFile ? imageFile.name : null,
-      ingredients,
-      steps,
-    };
+  // Convert the selected category to its database ID
+  const categoryMap = {
+    Breakfast: 2,
+    Lunch: 3,
+    Dinner: 4,
+    Dessert: 1,
+    Healthy: 5,
+    Snacks: 6,
+  };
 
-    console.log('Recipe submitted:', newRecipe);
+  const recipeData = {
+    user_id: 1, 
+    category_id: categoryMap[category],
+    title: recipeName,
+    description,
+    prep_time: Number(prepTime),
+    cook_time: Number(cookTime),
+    servings: Number(servings),
 
-    alert('Recipe saved successfully!');
+   
+    image_url: imageFile
+      ? `images/${imageFile.name}`
+      : "https://via.placeholder.com/600x400",
+
+  };
+
+  console.log(recipeData);
+  try {
+    await createRecipe(recipeData);
+
+    alert("Recipe created successfully!");
 
     // Reset form
-    setRecipeName('');
-    setCategory('Dinner');
-    setDescription('');
-    setPrepTime('');
-    setCookTime('');
-    setServings('');
+    setRecipeName("");
+    setCategory("Dinner");
+    setDescription("");
+    setPrepTime("");
+    setCookTime("");
+    setServings("");
     setImageFile(null);
-    setIngredients(['']);
-    setSteps(['']);
-  };
+    setIngredients([""]);
+    setSteps([""]);
+
+    navigate("/recipes");
+  } catch (error) {
+    console.error(error);
+    alert(error.message);
+  }
+};
 
   return (
     <>

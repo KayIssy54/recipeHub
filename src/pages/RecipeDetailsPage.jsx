@@ -69,7 +69,7 @@ function RecipeDetailsPage() {
       <div className="container" style={styles.page}>
         <img
           src={
-            recipe.image_url ||
+            recipe.image_url||
             'https://via.placeholder.com/900x450?text=Recipe+Image'
           }
           alt={recipe.title}
