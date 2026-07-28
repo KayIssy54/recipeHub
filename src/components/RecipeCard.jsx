@@ -2,24 +2,28 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 function RecipeCard({ recipe }) {
-  // state to track if the recipe is saved
   const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
-    setSaved(!saved); // toggle between true and false
+    setSaved(!saved);
   };
 
   return (
     <div style={styles.card}>
       <img
-        src={recipe.image}
+        src={
+          recipe.image_url ||
+          'https://via.placeholder.com/400x250?text=Recipe+Image'
+        }
         alt={recipe.title}
         style={styles.image}
       />
 
       <div style={styles.content}>
         <div style={styles.topRow}>
-          <span style={styles.category}>{recipe.category}</span>
+          <span style={styles.category}>
+            {recipe.category?.category_name}
+          </span>
 
           <button
             style={{
@@ -34,12 +38,30 @@ function RecipeCard({ recipe }) {
 
         <h3 style={styles.title}>{recipe.title}</h3>
 
+        <p style={styles.description}>
+          {recipe.description}
+        </p>
+
         <div style={styles.info}>
-          <span>⭐ {recipe.rating}</span>
-          <span>⏱ {recipe.time}</span>
+          <span>
+            👨‍🍳 {recipe.author?.first_name}
+          </span>
+
+          <span>
+            ⏱ {recipe.prep_time + recipe.cook_time} mins
+          </span>
         </div>
 
-        <Link to={`/recipes/${recipe.id}`} style={styles.button}>
+        <div style={styles.info}>
+          <span>
+            🍽 {recipe.servings} Servings
+          </span>
+        </div>
+
+        <Link
+          to={`/recipes/${recipe.recipe_id}`}
+          style={styles.button}
+        >
           View Recipe
         </Link>
       </div>
@@ -55,20 +77,24 @@ const styles = {
     boxShadow: '0 8px 20px rgba(0,0,0,0.08)',
     transition: 'transform 0.2s ease',
   },
+
   image: {
     width: '100%',
     height: '220px',
     objectFit: 'cover',
   },
+
   content: {
     padding: '20px',
   },
+
   topRow: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: '12px',
   },
+
   category: {
     background: '#F8F9FA',
     padding: '6px 12px',
@@ -77,6 +103,7 @@ const styles = {
     color: '#4CAF50',
     fontWeight: '600',
   },
+
   favoriteBtn: {
     color: '#fff',
     padding: '8px 14px',
@@ -85,16 +112,26 @@ const styles = {
     border: 'none',
     cursor: 'pointer',
   },
+
   title: {
-    marginBottom: '12px',
+    marginBottom: '10px',
     fontSize: '22px',
   },
+
+  description: {
+    color: '#666',
+    marginBottom: '15px',
+    lineHeight: '1.5',
+  },
+
   info: {
     display: 'flex',
     justifyContent: 'space-between',
-    marginBottom: '18px',
+    marginBottom: '12px',
     color: '#666',
+    fontSize: '14px',
   },
+
   button: {
     display: 'inline-block',
     background: '#4CAF50',
@@ -102,6 +139,8 @@ const styles = {
     padding: '12px 18px',
     borderRadius: '12px',
     fontWeight: '600',
+    textDecoration: 'none',
+    marginTop: '10px',
   },
 };
 
