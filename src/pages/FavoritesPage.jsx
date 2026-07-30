@@ -1,38 +1,72 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { getFavorites, removeFavorite } from "../services/favorites";
 
 function FavoritesPage() {
   const [search, setSearch] = useState('');
 
-  const [favorites, setFavorites] = useState([
-    {
-      id: 1,
-      title: 'Creamy Pasta',
-      category: 'Dinner',
-      image: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=600',
-    },
-    {
-      id: 2,
-      title: 'Pancakes',
-      category: 'Breakfast',
-      image: 'https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=600',
-    },
-    {
-      id: 3,
-      title: 'Caesar Salad',
-      category: 'Healthy',
-      image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=600',
-    },
-  ]);
+  const [favorites, setFavorites] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const removeFavorite = (id) => {
-    setFavorites(favorites.filter((recipe) => recipe.id !== id));
-  };
+  useEffect(() => {
+
+  async function loadFavorites(){
+
+    try {
+
+      const data = await getFavorites();
+
+      setFavorites(data);
+
+    } catch(error){
+
+      console.error(error);
+      setError(error.message);
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  }
+
+
+  loadFavorites();
+
+}, []);
+
+  const handleRemoveFavorite = async (recipeId) => {
+
+  try {
+
+    await removeFavorite(recipeId);
+
+    setFavorites((currentFavorites) =>
+      currentFavorites.filter(
+        (recipe) => recipe.recipe_id !== recipeId
+      )
+    );
+
+    alert("Removed from favorites");
+
+  } catch(error) {
+
+    console.error(error);
+    alert(error.message);
+
+  }
+
+};
+
 
   const filteredFavorites = favorites.filter((recipe) =>
     recipe.title.toLowerCase().includes(search.toLowerCase())
   );
+
+
 
   return (
     <>
@@ -57,20 +91,23 @@ function FavoritesPage() {
         ) : (
           <div style={styles.grid}>
             {filteredFavorites.map((recipe) => (
-              <div key={recipe.id} style={styles.card}>
+              <div key={recipe.recipe_id} style={styles.card}>
                 <img
-                  src={recipe.image}
+                  src={recipe.image_url
+                    ? `http://127.0.0.1:5000/uploads/${recipe.image_url}`
+                    : "https://via.placeholder.com/400x250" 
+                  }
                   alt={recipe.title}
                   style={styles.image}
                 />
 
                 <div style={styles.content}>
-                  <p style={styles.category}>{recipe.category}</p>
+                  <p style={styles.category}>{recipe.category?.category_name}</p>
 
                   <h3>{recipe.title}</h3>
 
                   <button
-                    onClick={() => removeFavorite(recipe.id)}
+                    onClick={() => handleRemoveFavorite(recipe.recipe_id)}
                     style={styles.removeBtn}
                   >
                     Remove Favorite

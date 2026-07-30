@@ -1,29 +1,53 @@
+import { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import recipes from '../data/recipes';
-import favorites from "../data/favorites";
-import reviews from '../data/reviews';
+import { getRecipes } from "../services/recipes";
+import { getFavorites } from "../services/favorites";
+import { getMyReviews } from "../services/reviews";
+import { getMyRecipes } from "../services/recipes";
+import { useNavigate } from "react-router-dom";
 
 function ProfilePage() {
-  const user = {
-    name: 'Joy Mwongera',
-    email: 'joy@example.com',
-    profileImage:
-      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400',
-  recipesCreated: recipes.length,
-  favoriteRecipes: favorites.length,
-  reviewsWritten: reviews.length,
-  };
-
+  const user = JSON.parse(localStorage.getItem("user")) || {
+  first_name: "",
+  last_name: "",
+  email: "",
+  profile_image: "",
+};
+    
+  const [recipes, setRecipes] = useState([]);
+  const [favorites, setFavorites] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const handleEditProfile = () => {
     alert('Edit Profile feature will be connected to the backend later.');
   };
+  const navigate = useNavigate();
 
-  const handleLogout = () => {
-    alert('Logout feature will be connected to the backend later.');
-  };
+   function handleLogout() {
+   localStorage.removeItem("access_token");
+   localStorage.removeItem("user");
 
+   navigate("/login");
+  }
+  
+  useEffect(() => {
+  async function loadProfileData() {
+    try {
+      const recipeData = await getMyRecipes();
+      const favoriteData = await getFavorites();
+      const reviewData = await getMyReviews();
+
+      setRecipes(recipeData);
+      setFavorites(favoriteData);
+      setReviews(reviewData);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  loadProfileData();
+}, []);
   return (
     <>
       <Navbar />
@@ -46,24 +70,19 @@ function ProfilePage() {
 
             <Link to="/my-recipes" style={styles.statLink}>
               <div style={styles.statCard}>
-                <h2>{user.recipesCreated}</h2>
+                <h2>{recipes.length}</h2>
                 <p>Recipes Created</p>
               </div>
             </Link>
 
             <Link to="/favorites" style={styles.statLink}>
               <div style={styles.statCard}>
-                <h2>{user.favoriteRecipes}</h2>
+                <h2>{favorites.length}</h2>
                 <p>Favorite Recipes</p>
               </div>
             </Link>
 
-            <Link to="/reviews" style={styles.statLink}>
-              <div style={styles.statCard}>
-                <h2>{user.reviewsWritten}</h2>
-                <p>Reviews Written</p>
-              </div>
-            </Link>
+            
 
           </div>
 

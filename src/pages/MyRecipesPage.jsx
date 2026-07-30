@@ -1,32 +1,52 @@
-import { useState } from 'react';
+import { useEffect,useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { getMyRecipes,deleteRecipe } from '../services/recipes';
 
 function MyRecipesPage() {
-  // Temporary sample recipes
-  const [myRecipes, setMyRecipes] = useState([
-    {
-      id: 1,
-      title: 'Creamy Pasta',
-      category: 'Dinner',
-      image:
-        'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=600',
-    },
-    {
-      id: 2,
-      title: 'Chocolate Pancakes',
-      category: 'Breakfast',
-      image:
-        'https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=600',
-    },
-  ]);
+  
+  const [myRecipes, setMyRecipes] = useState([])
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function loadRecipes() {
+      try {
+        const data = await getMyRecipes();
+        setMyRecipes(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadRecipes();
+  }, []);
 
   // Delete recipe
-  const handleDelete = (id) => {
-    const updatedRecipes = myRecipes.filter((recipe) => recipe.id !== id);
-    setMyRecipes(updatedRecipes);
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this recipe?"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      await deleteRecipe(id);
+
+      setMyRecipes((currentRecipes)=>
+        currentRecipes.filter((recipe) => recipe.recipe_id !== id)
+      );
+
+      alert("Recipe deleted successfully!");
+
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
   };
 
   return (
@@ -51,28 +71,31 @@ function MyRecipesPage() {
         {/* Recipe Grid */}
         <div style={styles.grid}>
           {myRecipes.map((recipe) => (
-            <div key={recipe.id} style={styles.card}>
+            <div key={recipe.recipe_id} style={styles.card}>
               <img
-                src={recipe.image}
+                src={recipe.image_url
+                   ? `http://127.0.0.1:5000/uploads/${recipe.image_url}`
+      :            "https://via.placeholder.com/400x250?text=Recipe+Image"
+                }
                 alt={recipe.title}
                 style={styles.image}
               />
 
               <div style={styles.content}>
-                <span style={styles.category}>{recipe.category}</span>
+                <span style={styles.category}>{recipe.category?.category_name}</span>
 
                 <h3 style={styles.recipeTitle}>{recipe.title}</h3>
 
                 <div style={styles.actions}>
                   <Link
-                    to={`/edit-recipe/${recipe.id}`}
+                    to={`/recipes/${recipe.recipe_id}/edit`}
                     style={styles.editBtn}
                   >
                     Edit
                   </Link>
 
                   <button
-                    onClick={() => handleDelete(recipe.id)}
+                    onClick={() => handleDelete(recipe.recipe_id)}
                     style={styles.deleteBtn}
                   >
                     Delete

@@ -11,8 +11,17 @@ export async function login(data) {
     body: JSON.stringify(data),
   });
 
-  return response.json();
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.error || "Login failed");
+  }
+
+  localStorage.setItem("access_token", result.access_token);
+
+  return result;
 }
+
 
 export async function register(data) {
   const response = await fetch(`${AUTH_URL}/register`, {
@@ -23,5 +32,11 @@ export async function register(data) {
     body: JSON.stringify(data),
   });
 
-  return response.json();
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.error || "Registration failed");
+  }
+
+  return result;
 }

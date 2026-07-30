@@ -1,19 +1,46 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { addFavorite, removeFavorite } from "../services/favorites";
 
 function RecipeCard({ recipe }) {
+  console.log("RECIPE CARD:", recipe);
+
   const [saved, setSaved] = useState(false);
 
-  const handleSave = () => {
-    setSaved(!saved);
+     const handleSave = async () => {
+       try {
+
+         if (!saved) {
+
+         await addFavorite(recipe.recipe_id);
+
+         setSaved(true);
+
+         alert("Recipe saved!");
+
+       } else {
+
+         await removeFavorite(recipe.recipe_id);
+
+         setSaved(false);
+
+         alert("Recipe removed!");
+
+       }
+
+       } catch(error) {
+         console.error(error);
+         alert(error.message);
+       }
   };
 
   return (
     <div style={styles.card}>
       <img
         src={
-          recipe.image_url ||
-          'https://via.placeholder.com/400x250?text=Recipe+Image'
+          recipe.image_url 
+           ? `http://127.0.0.1:5000/uploads/${recipe.image_url}`
+      :    "https://via.placeholder.com/400x250?text=Recipe+Image"
         }
         alt={recipe.title}
         style={styles.image}

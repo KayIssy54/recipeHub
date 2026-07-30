@@ -10,7 +10,6 @@ import AddRecipePage from './pages/AddRecipePage';
 import MyRecipesPage from './pages/MyRecipesPage';
 import EditRecipePage from './pages/EditRecipePage';
 import FavoritesPage from './pages/FavoritesPage';
-import ReviewsPage from './pages/ReviewsPage';
 import ProfilePage from './pages/ProfilePage';
 function App() {
   return (
@@ -23,9 +22,8 @@ function App() {
       <Route path="/categories" element={<CategoriesPage/>} />
       <Route path="/add-recipe" element={<AddRecipePage />} />
       <Route path="/my-recipes" element={<MyRecipesPage />} />
-      <Route path="/edit-recipe/:id" element={<EditRecipePage />} />
+      <Route path="/recipes/:id/edit" element={<EditRecipePage />} />
       <Route path="/favorites" element={<FavoritesPage />} />
-      <Route path="/reviews" element={<ReviewsPage />} />
       <Route path="/profile" element={<ProfilePage />} />
     </Routes>
   );

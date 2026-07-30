@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { createRecipe } from "../api/recipes";
+import { createRecipe } from "../services/recipes";
 import { useNavigate } from "react-router-dom";
 
 import Navbar from '../components/Navbar';
@@ -16,21 +16,31 @@ function AddRecipePage() {
   const [cookTime, setCookTime] = useState('');
   const [servings, setServings] = useState('');
   const [imageFile, setImageFile] = useState(null);
-
-  const [ingredients, setIngredients] = useState(['']);
+  const [prepTimeUnit, setPrepTimeUnit] = useState("minutes");
+  const [cookTimeUnit, setCookTimeUnit] = useState("minutes");
+  const [ingredients, setIngredients] = useState([{name: "",
+    quantity: "",
+    unit: ""}]);
   const [steps, setSteps] = useState(['']);
 
   // Handle ingredient input
-  const handleIngredientChange = (index, value) => {
-    const updated = [...ingredients];
-    updated[index] = value;
-    setIngredients(updated);
+  const handleIngredientChange = (index,field,value) => {
+    const updatedIngredients = [...ingredients];
+    updatedIngredients[index][field] = value;
+    setIngredients(updatedIngredients);
   };
 
   // Add another ingredient field
   const addIngredient = () => {
-    setIngredients([...ingredients, '']);
-  };
+    setIngredients([
+        ...ingredients,
+        {
+            name: "",
+            quantity: "",
+            unit: ""
+        }
+    ]);
+};
 
   // Handle instruction input
   const handleStepChange = (index, value) => {
@@ -59,12 +69,13 @@ function AddRecipePage() {
   };
 
   const recipeData = {
-    user_id: 1, 
     category_id: categoryMap[category],
     title: recipeName,
     description,
     prep_time: Number(prepTime),
+    prep_time_unit: prepTimeUnit,
     cook_time: Number(cookTime),
+    cook_time_unit: cookTimeUnit,
     servings: Number(servings),
 
    
@@ -72,6 +83,8 @@ function AddRecipePage() {
       ? `images/${imageFile.name}`
       : "https://via.placeholder.com/600x400",
 
+    ingredients,
+    instructions: steps,
   };
 
   console.log(recipeData);
@@ -88,7 +101,8 @@ function AddRecipePage() {
     setCookTime("");
     setServings("");
     setImageFile(null);
-    setIngredients([""]);
+    setIngredients([{name:"",quantity: "",
+    unit: ""}]);
     setSteps([""]);
 
     navigate("/recipes");
@@ -131,6 +145,7 @@ function AddRecipePage() {
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               style={styles.input}
+              required
             >
               <option>Breakfast</option>
               <option>Lunch</option>
@@ -146,6 +161,7 @@ function AddRecipePage() {
               onChange={(e) => setDescription(e.target.value)}
               style={styles.textarea}
               rows={4}
+              required
             />
 
             {/* Upload Image */}
@@ -177,20 +193,46 @@ function AddRecipePage() {
 
             <div style={styles.row}>
               <input
-                type="text"
+                type="number"
                 placeholder="Preparation Time"
                 value={prepTime}
                 onChange={(e) => setPrepTime(e.target.value)}
                 style={styles.input}
+                required
               />
 
+              <select
+                value={prepTimeUnit}
+                onChange={(e)=>setPrepTimeUnit(e.target.value)}
+                style={styles.input}
+              >
+
+                <option value="minutes">Minutes</option>
+                <option value="hours">Hours</option>
+              </select>
+
+              </div>
+
+              <div style={styles.row}>
               <input
-                type="text"
+                type="number"
                 placeholder="Cooking Time"
                 value={cookTime}
                 onChange={(e) => setCookTime(e.target.value)}
                 style={styles.input}
+                required
               />
+
+              <select
+                value={cookTimeUnit}
+                onChange={(e)=>setCookTimeUnit(e.target.value)}
+                style={styles.input}
+              >
+                <option value="minutes">Minutes</option>
+                <option value="hours">Hours</option>
+              </select>
+
+              </div>
 
               <input
                 type="number"
@@ -198,26 +240,62 @@ function AddRecipePage() {
                 value={servings}
                 onChange={(e) => setServings(e.target.value)}
                 style={styles.input}
+                required
               />
             </div>
-          </div>
+          
 
           {/* Ingredients */}
           <div style={styles.section}>
             <h2 style={styles.sectionTitle}>Ingredients</h2>
 
             {ingredients.map((ingredient, index) => (
-              <input
-                key={index}
-                type="text"
-                placeholder={`Ingredient ${index + 1}`}
-                value={ingredient}
-                onChange={(e) =>
-                  handleIngredientChange(index, e.target.value)
-                }
-                style={styles.input}
-              />
-            ))}
+              <div key={index}>
+
+    <input
+        type="text"
+        placeholder="Quantity"
+        value={ingredient.quantity}
+        required
+        onChange={(e) =>
+            handleIngredientChange(
+                index,
+                "quantity",
+                e.target.value
+            )
+        }
+    />
+
+    <input
+        type="text"
+        placeholder="Unit"
+        value={ingredient.unit}
+        required
+        onChange={(e) =>
+            handleIngredientChange(
+                index,
+                "unit",
+                e.target.value
+            )
+        }
+    />
+
+    <input
+        type="text"
+        placeholder="Ingredient"
+        value={ingredient.name}
+        required
+        onChange={(e) =>
+            handleIngredientChange(
+                index,
+                "name",
+                e.target.value
+            )
+           }
+           style={styles.input}
+           />
+          </div>
+        ))}
 
             <button
               type="button"
@@ -240,6 +318,7 @@ function AddRecipePage() {
                 onChange={(e) => handleStepChange(index, e.target.value)}
                 style={styles.textarea}
                 rows={3}
+                required
               />
             ))}
 

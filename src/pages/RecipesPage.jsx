@@ -3,7 +3,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import RecipeCard from '../components/RecipeCard';
 
-import { getRecipes } from '../api/recipes';
+import { getRecipes } from '../services/recipes';
 
 function RecipesPage() {
   const [recipes, setRecipes] = useState([]);
@@ -25,6 +25,7 @@ function RecipesPage() {
     async function loadRecipes() {
       try {
         const data = await getRecipes();
+        console.log(data)
         setRecipes(data);
       } catch (err) {
         setError(err.message);

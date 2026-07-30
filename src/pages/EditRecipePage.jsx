@@ -1,43 +1,41 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
+import { getRecipe, updateRecipe, deleteRecipe, uploadImage} from "../services/recipes";
+import { useNavigate, useParams } from "react-router-dom";
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 function EditRecipePage() {
-  const [recipeName, setRecipeName] = useState('Creamy Pasta');
-  const [category, setCategory] = useState('Dinner');
-  const [description, setDescription] = useState(
-    'A rich and creamy pasta recipe that is quick and easy to prepare.'
-  );
+  const navigate = useNavigate();
+  const { id } = useParams();
+  
+  const [recipeName, setRecipeName] = useState("");
+  const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
 
-  const [prepTime, setPrepTime] = useState('10 mins');
-  const [cookTime, setCookTime] = useState('20 mins');
-  const [servings, setServings] = useState('4');
+  const [prepTime, setPrepTime] = useState("");
+  const [cookTime, setCookTime] = useState("");
+  const [servings, setServings] = useState("");
 
   const [imageFile, setImageFile] = useState(null);
 
-  const [ingredients, setIngredients] = useState([
-    '200g Pasta',
-    '1 Cup Heavy Cream',
-    '2 Garlic Cloves',
-    'Parmesan Cheese'
-  ]);
+  const [ingredients, setIngredients] = useState([]);
+  const [steps, setSteps] = useState([]);
 
-  const [steps, setSteps] = useState([
-    'Boil the pasta.',
-    'Cook the garlic.',
-    'Add the cream.',
-    'Mix in the pasta.',
-    'Serve while hot.'
-  ]);
-
-  const handleIngredientChange = (index, value) => {
+  const handleIngredientChange = (index, field, value) => {
     const updated = [...ingredients];
-    updated[index] = value;
+    updated[index][field] = value;
     setIngredients(updated);
   };
 
   const addIngredient = () => {
-    setIngredients([...ingredients, '']);
+    setIngredients([
+    ...ingredients,
+    {
+      name: "",
+      quantity: "",
+      unit: ""
+    }
+  ]);
   };
 
   const handleStepChange = (index, value) => {
@@ -50,35 +48,99 @@ function EditRecipePage() {
     setSteps([...steps, '']);
   };
 
-  const handleUpdate = (e) => {
+  const handleUpdate = async(e) => {
     e.preventDefault();
+    
+    try{
+     let imageUrl = null;
+
+
+     if (imageFile) {
+      const uploadResponse = await uploadImage(imageFile);
+
+      imageUrl = uploadResponse.image_url;
+     }
+
 
     const updatedRecipe = {
-      recipeName,
-      category,
+      title: recipeName,
+      category_id:Number(category),
       description,
-      prepTime,
-      cookTime,
-      servings,
-      image: imageFile,
+      prep_time: Number(prepTime),
+      prep_time_unit: "minutes",
+      cook_time: Number(cookTime),
+      cook_time_unit: "minutes",
+      servings: Number(servings),
+      image_url: imageUrl,
       ingredients,
-      steps,
+      instructions: steps,
     };
 
-    console.log(updatedRecipe);
+    
+      console.log("Sending to backend:");
+      console.log(JSON.stringify(updatedRecipe, null, 2));
+      await updateRecipe(id, updatedRecipe);
 
-    alert('Recipe updated successfully!');
-  };
+      alert('Recipe updated successfully!');
 
-  const handleDelete = () => {
-    const confirmDelete = window.confirm(
-      'Are you sure you want to delete this recipe?'
-    );
-
-    if (confirmDelete) {
-      alert('Recipe deleted successfully!');
+      navigate("/recipes");
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
     }
   };
+
+  const handleDelete = async () => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this recipe?"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      await deleteRecipe(id);
+
+      alert("Recipe deleted successfully!");
+
+      navigate("/recipes");
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+    }
+  };
+
+  useEffect(() => {
+  async function loadRecipe() {
+    try {
+      const recipe = await getRecipe(id);
+
+      console.log("recipe.category =", recipe.category);
+      console.log("recipe.category_id =", recipe.category_id);
+
+      setRecipeName(recipe.title || "");
+
+      setCategory(recipe.category?.category_id?.toString() || "");
+
+      setDescription(recipe.description || "");
+
+      setPrepTime(recipe.prep_time?.toString() || "");
+
+      setCookTime(recipe.cook_time?.toString() || "");
+
+      setServings(recipe.servings?.toString() || "");
+
+      setIngredients(recipe.ingredients || []);
+
+      setSteps(recipe.instructions || []);
+
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+    }
+  }
+
+  loadRecipe();
+}, [id]);
 
   return (
     <>
@@ -114,12 +176,12 @@ function EditRecipePage() {
               onChange={(e) => setCategory(e.target.value)}
               style={styles.input}
             >
-              <option>Breakfast</option>
-              <option>Lunch</option>
-              <option>Dinner</option>
-              <option>Dessert</option>
-              <option>Healthy</option>
-              <option>Snacks</option>
+              <option value="1">Dessert</option>
+              <option value="2">Breakfast</option>
+              <option value="3">Lunch</option>
+              <option value="4">Dinner</option>
+              <option value="5">Healthy</option>
+              <option value="6">Snacks</option>
             </select>
 
             <textarea
@@ -163,7 +225,7 @@ function EditRecipePage() {
 
             <div style={styles.row}>
               <input
-                type="text"
+                type="number"
                 placeholder="Preparation Time"
                 value={prepTime}
                 onChange={(e) =>
@@ -173,7 +235,7 @@ function EditRecipePage() {
               />
 
               <input
-                type="text"
+                type="number"
                 placeholder="Cooking Time"
                 value={cookTime}
                 onChange={(e) =>
@@ -200,19 +262,53 @@ function EditRecipePage() {
             <h2>Ingredients</h2>
 
             {ingredients.map((ingredient, index) => (
+              <div key={index} style={styles.row}>
+
               <input
-                key={index}
                 type="text"
-                placeholder={`Ingredient ${index + 1}`}
-                value={ingredient}
+                placeholder="Ingredient name"
+                value={ingredient.name}
                 onChange={(e) =>
                   handleIngredientChange(
                     index,
+                    "name",
                     e.target.value
                   )
                 }
                 style={styles.input}
               />
+
+              <input
+                type="text"
+                placeholder="Quantity"
+                value={ingredient.quantity}
+                onChange={(e) =>
+                 handleIngredientChange(
+                   index,
+                   "quantity",
+                   e.target.value
+                 )
+               }
+               style={styles.input}
+             />
+
+      
+             <input
+               type="text"
+               placeholder="Unit"
+               value={ingredient.unit}
+               onChange={(e) =>
+                handleIngredientChange(
+                  index,
+                  "unit",
+                  e.target.value
+                )
+              }
+              style={styles.input}
+             />
+
+          </div>
+
             ))}
 
             <button

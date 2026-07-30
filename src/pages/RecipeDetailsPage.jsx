@@ -4,7 +4,10 @@ import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
-import { getRecipe } from '../api/recipes';
+import { getRecipe } from '../services/recipes';
+import { getReviews, addReview} from "../services/reviews";
+import ReviewCard from "../components/ReviewCard";
+import StarRating from "../components/StarRating";
 
 function RecipeDetailsPage() {
   const { id } = useParams();
@@ -12,50 +15,101 @@ function RecipeDetailsPage() {
   const [recipe, setRecipe] = useState(null);
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [reviews, setReviews] = useState([]);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
   const [error, setError] = useState('');
 
   useEffect(() => {
-    async function loadRecipe() {
-      try {
-        const data = await getRecipe(id);
-        setRecipe(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
+
+  async function loadData() {
+
+    try {
+
+      // Get recipe details
+      const recipeData = await getRecipe(id);
+      setRecipe(recipeData);
+
+
+      // Get reviews for this recipe
+      const reviewData = await getReviews(id);
+      console.log("REVIEWS:", reviewData);
+      setReviews(reviewData);
+
+
+    } catch (error) {
+
+      setError(error.message);
+
+    } finally {
+
+      setLoading(false);
+
     }
 
-    loadRecipe();
-  }, [id]);
+  }
 
-  if (loading) {
-    return (
+
+  loadData();
+
+}, [id]);
+
+async function handleReviewSubmit(e) {
+  e.preventDefault();
+
+  try {
+
+    await addReview(id, {
+      rating: rating,
+      comment: comment
+    });
+
+    alert("Review added successfully!");
+
+    // clear form
+    setRating(0);
+    setComment("");
+
+    // refresh reviews
+    const updatedReviews = await getReviews(id);
+    setReviews(updatedReviews);
+
+  } catch(error) {
+
+    alert(error.message);
+
+  }
+}
+
+if (loading) {
+  return (
       <>
         <Navbar />
-        <div className="container">
+        <div className="container" style={styles.page}>
           <h2>Loading recipe...</h2>
         </div>
       </>
     );
   }
 
+
   if (error) {
     return (
       <>
         <Navbar />
-        <div className="container">
+        <div className="container" style={styles.page}>
           <h2>{error}</h2>
         </div>
       </>
     );
   }
 
+
   if (!recipe) {
     return (
       <>
         <Navbar />
-        <div className="container">
+        <div className="container" style={styles.page}>
           <h2>Recipe not found.</h2>
         </div>
       </>
@@ -69,8 +123,9 @@ function RecipeDetailsPage() {
       <div className="container" style={styles.page}>
         <img
           src={
-            recipe.image_url||
-            'https://via.placeholder.com/900x450?text=Recipe+Image'
+            recipe.image_url
+                ? `http://127.0.0.1:5000/uploads/${recipe.image_url}`
+      :         "https://via.placeholder.com/900x450?text=Recipe+Image"
           }
           alt={recipe.title}
           style={styles.heroImage}
@@ -144,9 +199,9 @@ function RecipeDetailsPage() {
         <div style={styles.section}>
           <h2>Instructions</h2>
 
-          {recipe.instructions?.length ? (
+          {recipe.instructions_list?.length ? (
             <ol style={styles.list}>
-              {recipe.instructions.map((instruction) => (
+              {recipe.instructions_list.map((instruction) => (
                 <li key={instruction.instruction_id}>
                   {instruction.step_description}
                 </li>
@@ -158,29 +213,70 @@ function RecipeDetailsPage() {
         </div>
 
         <div style={styles.section}>
-          <h2>Reviews</h2>
+  <h2>Reviews</h2>
 
-          {recipe.reviews?.length ? (
-            recipe.reviews.map((review) => (
-              <div
-                key={review.review_id}
-                style={styles.reviewCard}
-              >
-                <h4>{review.user?.first_name}</h4>
+  {reviews.length ? (
+    reviews.map((review) => (
+      <ReviewCard
+        key={review.review_id}
+        review={review}
+      />
+    ))
+  ) : (
+    <p>No reviews yet.</p>
+  )}
 
-                <p>{review.comment}</p>
-              </div>
-            ))
-          ) : (
-            <p>No reviews yet.</p>
-          )}
-        </div>
-      </div>
+</div>
 
+      <div style={styles.section}>
+  <h2>Add Review</h2>
+
+  <form onSubmit={handleReviewSubmit}>
+
+    <StarRating 
+      rating={rating}
+      setRating={setRating}
+    />
+
+    <textarea
+      placeholder="Write your review..."
+      value={comment}
+      onChange={(e)=>setComment(e.target.value)}
+      style={{
+        width: "100%",
+        marginTop: "15px",
+        padding: "12px",
+        borderRadius: "10px",
+        border: "1px solid #ddd"
+      }}
+    />
+
+    <button 
+      type="submit"
+      style={{
+        marginTop: "15px",
+        background: "#4CAF50",
+        color: "white",
+        padding: "12px 20px",
+        border: "none",
+        borderRadius: "10px",
+        cursor: "pointer"
+      }}
+    >
+      Submit Review
+    </button>
+
+  </form>
+</div>
+   
+</div>
+ 
       <Footer />
     </>
   );
 }
+
+
 
 const styles = {
   page: {

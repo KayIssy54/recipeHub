@@ -1,8 +1,52 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { login } from "../api/auth";
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
 
+
 function LoginPage() {
+  const navigate = useNavigate();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const data = await login({
+      email,
+      password
+
+  });
+
+    console.log(data);
+
+    // Save token
+    localStorage.setItem(
+      "access_token",
+      data.access_token
+    );
+
+    // Save logged-in user
+    localStorage.setItem(
+      "user",
+      JSON.stringify(data.user)
+    );
+
+
+    alert("Login successful!");
+
+    navigate("/recipes");
+
+  } catch (error) {
+    setError(error.message);
+  }
+};
   return (
     <>
       <Navbar />
@@ -12,18 +56,51 @@ function LoginPage() {
           <h2 style={styles.title}>Welcome Back</h2>
           <p style={styles.subtitle}>Login to continue to Recipe Hub</p>
 
-          <form style={styles.form}>
+          <form 
+            style={styles.form}
+            onSubmit={handleSubmit}
+            >
+
             <input
               type="email"
+              required
               placeholder="Enter your email"
+              value={email}
+              onChange={(e)=>setEmail(e.target.value)}
               style={styles.input}
             />
 
-            <input
-              type="password"
-              placeholder="Enter your password"
-              style={styles.input}
+            <div style={{ position: "relative" }}>
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={styles.input}
             />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: "absolute",
+                right: "10px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                border: "none",
+                background: "transparent",
+                cursor: "pointer",
+              }}
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
+
+            {error && (
+              <p style={{color:"red"}}>
+               {error}
+              </p>
+            )}
 
             <button type="submit" style={styles.loginBtn}>
               Login

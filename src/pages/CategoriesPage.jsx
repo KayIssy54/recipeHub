@@ -1,10 +1,25 @@
+import { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
-
+import { getCategories } from "../services/categories";
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import categories from '../data/categories';
 
 function CategoriesPage() {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+  async function loadCategories() {
+    try {
+      const data = await getCategories();
+      setCategories(data);
+    } catch(error) {
+      console.log(error.message);
+    }
+  }
+
+  loadCategories();
+}, []);
+  
   return (
     <>
       <Navbar />
