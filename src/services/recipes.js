@@ -133,23 +133,20 @@ export async function uploadImage(file) {
 
 
   const response = await fetch(
-    "http://127.0.0.1:5000/api/upload/",
+    `${API_URL}/api/upload/`,
     {
       method: "POST",
       body: formData
     }
   );
 
-  if (response.status === 401) {
-  logout();
-  return;
-}
+
 
   const data = await response.json();
 
 
   if (!response.ok) {
-    throw new Error(data.error);
+    throw new Error(data.error ||"Failed to upload image");
   }
 
 
