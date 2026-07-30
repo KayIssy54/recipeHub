@@ -35,28 +35,25 @@ function CategoriesPage() {
 
         {/* Category grid */}
         <div style={styles.grid}>
-          {categories.map((category) => (
-            <Link
-              key={category.id}
-              to="/recipes"
-              style={styles.card}
-            >
-              <img
-                src={category.image}
-                alt={category.name}
-                style={styles.image}
-              />
+        {categories.map((category) => (
+  <Link
+    key={category.category_id}
+    to="/recipes"
+    style={styles.card}
+  >
 
-              <div style={styles.content}>
-                <h3 style={styles.name}>{category.name}</h3>
-                <p style={styles.count}>
-                  {category.count} recipes
-                </p>
+    <div style={styles.content}>
+      <h3 style={styles.name}>
+        {category.category_name}
+      </h3>
 
-                <span style={styles.link}>View Recipes →</span>
-              </div>
-            </Link>
-          ))}
+      <span style={styles.link}>
+        View Recipes →
+      </span>
+    </div>
+
+  </Link>
+))}
         </div>
       </div>
 
