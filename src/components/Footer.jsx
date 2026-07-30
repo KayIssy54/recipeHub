@@ -1,12 +1,13 @@
+import { Link } from "react-router-dom";
 function Footer() {
   return (
     <footer style={styles.footer}>
       <div className="container" style={styles.content}>
         <p>© 2026 Recipe Hub</p>
         <div style={styles.links}>
-          <a href="#">About</a>
-          <a href="#">Contact</a>
-          <a href="#">Privacy Policy</a>
+          <Link to="/about">About</Link>
+          <Link to="/contact">Contact</Link>
+          <Link to="/privacy">Privacy Policy</Link>
         </div>
       </div>
     </footer>
