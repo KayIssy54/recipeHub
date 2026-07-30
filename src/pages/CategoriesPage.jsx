@@ -37,7 +37,7 @@ function CategoriesPage() {
         <div style={styles.grid}>
         {categories.map((category) => (
   <Link
-    key={category.category_id}
+    key={category.id}
     to="/recipes"
     style={styles.card}
   >
