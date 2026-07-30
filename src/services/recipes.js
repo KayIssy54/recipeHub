@@ -1,7 +1,7 @@
 import API_URL from "../api/api";
 import { logout } from "./authHelpers";
 
-const RECIPES_URL = `${API_URL}/recipes`;
+const RECIPES_URL = `${API_URL}api/recipes`;
 
 export async function getRecipes() {
   const response = await fetch(`${RECIPES_URL}/`);
