@@ -1,7 +1,7 @@
 import API_URL from "../api/api";
 import { logout } from "./authHelpers";
 
-const RECIPES_URL = `${API_URL}api/recipes`;
+const RECIPES_URL = `${API_URL}/api/recipes`;
 
 export async function getRecipes() {
   const response = await fetch(`${RECIPES_URL}/`);
@@ -60,7 +60,7 @@ export async function createRecipe(recipeData) {
 export async function getMyRecipes() {
   const token = localStorage.getItem("access_token");
 
-  const response = await fetch(`${API_URL}/recipes/my-recipes`, {
+  const response = await fetch(`${API_URL}api/recipes/my-recipes`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
