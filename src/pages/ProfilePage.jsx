@@ -30,7 +30,7 @@ function ProfilePage() {
 
    navigate("/login");
   }
-  
+  /*
   useEffect(() => {
   async function loadProfileData() {
     try {
@@ -48,6 +48,31 @@ function ProfilePage() {
 
   loadProfileData();
 }, []);
+*/
+
+useEffect(() => {
+  async function loadProfileData() {
+    try {
+      const recipeData = await getMyRecipes();
+      console.log("MY RECIPES:", recipeData);
+
+      const favoriteData = await getFavorites();
+      console.log("FAVORITES:", favoriteData);
+
+      const reviewData = await getMyReviews();
+      console.log("REVIEWS:", reviewData);
+
+      setRecipes(recipeData);
+      setFavorites(favoriteData);
+      setReviews(reviewData);
+
+    } catch (error) {
+      console.error("PROFILE ERROR:", error);
+    }
+  }
+
+  loadProfileData();
+}, []);
   return (
     <>
       <Navbar />
@@ -56,11 +81,11 @@ function ProfilePage() {
         <div style={styles.profileCard}>
           <img
             src={user.profileImage}
-            alt={user.name}
+            alt={`${user.first_name} ${user.last_name}`}
             style={styles.image}
           />
 
-          <h1 style={styles.name}>{user.name}</h1>
+          <h1 style={styles.name}>{user.first_name} {user.last_name}</h1>
 
           <p style={styles.email}>{user.email}</p>
 

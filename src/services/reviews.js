@@ -59,7 +59,7 @@ export async function getMyReviews() {
   const token = localStorage.getItem("access_token");
 
   const response = await fetch(
-    `${API_URL}/reviews/my`,
+    `${API_URL}/api/reviews/my`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -72,7 +72,7 @@ export async function getMyReviews() {
   return;
 }
 
-  const data = await response.json();
+  const data = JSON.parse(text);
 
   if (!response.ok) {
     throw new Error(data.error || "Failed to fetch your reviews");
