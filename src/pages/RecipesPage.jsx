@@ -38,13 +38,21 @@ function RecipesPage() {
   }, []);
 
   const filteredRecipes = recipes.filter((recipe) => {
+     console.log(
+    "Recipe:",
+    recipe.title,
+    "Category:",
+    recipe.category?.category_name,
+    "Selected:",
+    selectedCategory
+  );
     const matchesSearch = recipe.title
       .toLowerCase()
       .includes(search.toLowerCase());
 
     const matchesCategory =
       selectedCategory === 'All' ||
-      recipe.category?.category_name === selectedCategory;
+      recipe.category?.category_name=== selectedCategory;
 
     return matchesSearch && matchesCategory;
   });
