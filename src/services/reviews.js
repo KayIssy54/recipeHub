@@ -4,7 +4,7 @@ import { logout } from "./authHelpers";
 export async function getReviews(recipeId){
 
   const response = await fetch(
-    `${API_URL}/reviews/recipe/${recipeId}`
+    `${API_URL}/api/reviews/recipe/${recipeId}`
   );
  
 
@@ -24,7 +24,7 @@ export async function addReview(recipeId, review){
   const token = localStorage.getItem("access_token");
 
   const response = await fetch(
-    `${API_URL}/reviews/${recipeId}`,
+    `${API_URL}/api/reviews/${recipeId}`,
     {
       method: "POST",
 
