@@ -1,34 +1,42 @@
-const API_URL = "../api/api";
+import API_URL from "../api/api";
 
-export async function register(userData) {
+const AUTH_URL = `${API_URL}/api/auth`;
 
-  const response = await fetch(
-    `${API_URL}/api/auth/register`,
-    {
-      method: "POST",
+export async function login(data) {
+  const response = await fetch(`${AUTH_URL}/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
 
-      headers: {
-        "Content-Type": "application/json",
-      },
-
-      body: JSON.stringify(userData),
-    }
-  );
-
-
-  const data = await response.json();
-
+  const result = await response.json();
 
   if (!response.ok) {
-
-    throw new Error(
-      data.message || "Registration failed"
-    );
-
+    throw new Error(result.error || "Login failed");
   }
 
+  localStorage.setItem("access_token", result.access_token);
 
-  return data;
-
+  return result;
 }
 
+
+export async function register(data) {
+  const response = await fetch(`${AUTH_URL}/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.error || "Registration failed");
+  }
+
+  return result;
+}
