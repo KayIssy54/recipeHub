@@ -7,8 +7,9 @@ export async function getReviews(recipeId){
     `${API_URL}/api/reviews/recipe/${recipeId}`
   );
  
-
-  const data = await response.json();
+  const text = await response.text();
+  console.log("Review response:", text);
+  
 
   if(!response.ok){
     throw new Error("Failed to fetch reviews");
