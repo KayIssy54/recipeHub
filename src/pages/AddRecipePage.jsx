@@ -60,12 +60,12 @@ function AddRecipePage() {
 
   // Convert the selected category to its database ID
   const categoryMap = {
-    Breakfast: 2,
-    Lunch: 3,
-    Dinner: 4,
-    Dessert: 1,
-    Healthy: 5,
-    Snacks: 6,
+    Breakfast: 68,
+    Lunch: 69,
+    Dinner: 70,
+    Dessert: 71,
+    Healthy: 72,
+    Snacks: 73,
   };
 
   const recipeData = {
