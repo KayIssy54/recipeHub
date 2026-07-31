@@ -32,12 +32,11 @@ export async function register(data) {
     body: JSON.stringify(data),
   });
 
-  const text = await response.text();
-  console.log("Register response:", text);
+  const result = await response.json();
 
   if (!response.ok) {
-    throw new Error(text || "Registration failed");
+    throw new Error(result.error || "Registration failed");
   }
 
-  return JSON.parse(text);
+  return result;
 }
