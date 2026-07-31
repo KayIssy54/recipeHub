@@ -1,6 +1,6 @@
 import API_URL from "./api";
 
-const AUTH_URL = `${API_URL}api/auth`;
+const AUTH_URL = `${API_URL}/api/auth`;
 
 export async function login(data) {
   const response = await fetch(`${AUTH_URL}/login`, {
