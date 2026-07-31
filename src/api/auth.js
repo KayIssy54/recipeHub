@@ -1,4 +1,4 @@
-import API_URL from "./api";
+import API_URL from "../api/api";
 
 const AUTH_URL = `${API_URL}/api/auth`;
 
@@ -24,7 +24,7 @@ export async function login(data) {
 
 
 export async function register(data) {
-  const response = await fetch(`${AUTH_URL}/register`, {
+  const response = await fetch(`${AUTH_URL}register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
