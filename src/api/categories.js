@@ -1,5 +1,4 @@
 import API_URL from "./api";
-
 const CATEGORIES_URL = `${API_URL}/categories`;
 
 export async function getCategories() {
