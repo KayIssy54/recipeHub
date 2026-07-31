@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { addFavorite, removeFavorite } from "../services/favorites";
 
 function RecipeCard({ recipe }) {
-  console.log("RECIPE CARD:", recipe);
+  console.log("Title:", recipe.title);
+  console.log("Image:", recipe.image_url);
 
   const [saved, setSaved] = useState(false);
 
