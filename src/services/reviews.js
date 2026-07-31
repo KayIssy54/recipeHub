@@ -43,7 +43,8 @@ export async function addReview(recipeId, review){
   return;
 }
 
-  const data = await response.json();
+  const text = await response.text();
+  console.log("Add review response:", text);
 
 
   if(!response.ok){
@@ -51,7 +52,7 @@ export async function addReview(recipeId, review){
   }
 
 
-  return data;
+  return JSON.parse(text);
 }
 
 export async function getMyReviews() {

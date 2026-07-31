@@ -15,7 +15,7 @@ export async function getRecipes() {
 
 export async function getRecipe(recipeId) {
   const response = await fetch(`${RECIPES_URL}/${recipeId}`);
-
+  
   if (!response.ok) {
     throw new Error("Recipe not found.");
   }
