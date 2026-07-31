@@ -15,7 +15,7 @@ export async function getReviews(recipeId){
     throw new Error("Failed to fetch reviews");
   }
 
-  return data;
+  return JSON.parse(text);
 }
 
 
