@@ -74,7 +74,7 @@ function MyRecipesPage() {
             <div key={recipe.recipe_id} style={styles.card}>
               <img
                 src={recipe.image_url
-                   ? `http://127.0.0.1:5000/uploads/${recipe.image_url}`
+                   ? recipe.image_url
       :            "https://via.placeholder.com/400x250?text=Recipe+Image"
                 }
                 alt={recipe.title}
