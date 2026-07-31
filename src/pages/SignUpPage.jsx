@@ -121,6 +121,7 @@ function SignUpPage() {
                 type="text"
                 name="first_name"
                 placeholder="First Name"
+                autocomplete="off"
                 value={formData.first_name}
                 onChange={handleChange}
                 style={styles.input}
@@ -132,6 +133,7 @@ function SignUpPage() {
                 type="text"
                 name="last_name"
                 placeholder="Last Name"
+                autocomplete="off"
                 value={formData.last_name}
                 onChange={handleChange}
                 style={styles.input}
@@ -147,6 +149,7 @@ function SignUpPage() {
               type="email"
               name="email"
               placeholder="Email Address"
+              autocomplete="off"
               value={formData.email}
               onChange={handleChange}
               style={styles.input}
@@ -159,6 +162,7 @@ function SignUpPage() {
               type="password"
               name="password"
               placeholder="Password"
+              autoComplete="off"
               value={formData.password}
               onChange={handleChange}
               style={styles.input}
@@ -171,6 +175,7 @@ function SignUpPage() {
               type="password"
               name="confirm_password"
               placeholder="Confirm Password"
+              autoComplete="off"
               value={formData.confirm_password}
               onChange={handleChange}
               style={styles.input}
