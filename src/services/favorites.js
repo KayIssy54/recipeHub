@@ -5,7 +5,7 @@ export async function addFavorite(recipeId) {
   const token = localStorage.getItem("access_token");
 
   const response = await fetch(
-    `${API_URL}/favorites/${recipeId}`,
+    `${API_URL}/api/favorites/${recipeId}`,
     {
       method: "POST",
       headers: {
@@ -33,7 +33,7 @@ export async function removeFavorite(recipeId) {
   const token = localStorage.getItem("access_token");
 
   const response = await fetch(
-    `${API_URL}/favorites/${recipeId}`,
+    `${API_URL}/api/favorites/${recipeId}`,
     {
       method: "DELETE",
       headers: {
@@ -60,7 +60,7 @@ export async function getFavorites() {
   const token = localStorage.getItem("access_token");
 
   const response = await fetch(
-    `${API_URL}/favorites/`,
+    `${API_URL}/api/favorites/`,
     {
       method: "GET",
       headers: {
