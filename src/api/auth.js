@@ -24,7 +24,7 @@ export async function login(data) {
 
 
 export async function register(data) {
-  const response = await fetch(`${AUTH_URL}register`, {
+  const response = await fetch(`${AUTH_URL}/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
